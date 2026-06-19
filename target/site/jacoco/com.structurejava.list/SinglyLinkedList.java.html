@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SinglyLinkedList.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">StructureJava</a> &gt; <a href="index.source.html" class="el_package">com.structurejava.list</a> &gt; <span class="el_source">SinglyLinkedList.java</span></div><h1>SinglyLinkedList.java</h1><pre class="source lang-java linenums">package com.structurejava.list;
+
+import java.util.Comparator;
+
+import com.structurejava.api.ListADT;
+import com.structurejava.node.Node;
+
+/**
+ * Implementação de lista simplesmente encadeada.
+ * Mantém referências para o primeiro nó ({@code head}) e o último
+ * ({@code tail}), além de um contador de tamanho, garantindo inserção
+ * no início e no fim em tempo O(1). Imune a exceções: operações
+ * inválidas retornam valores sentinela.
+ *
+ * @param &lt;T&gt; o tipo dos elementos armazenados na lista.
+ */
+public class SinglyLinkedList&lt;T&gt; implements ListADT&lt;T&gt; {
+
+    /** Referência ao primeiro nó da lista; {@code null} se vazia. */
+    private Node&lt;T&gt; head;
+
+    /** Referência ao último nó da lista; {@code null} se vazia. */
+    private Node&lt;T&gt; tail;
+
+    /** Quantidade de elementos atualmente na lista. */
+    private int size;
+
+    /**
+     * Cria uma lista vazia.
+     */
+<span class="fc" id="L31">    public SinglyLinkedList() {</span>
+<span class="fc" id="L32">        this.head = null;</span>
+<span class="fc" id="L33">        this.tail = null;</span>
+<span class="fc" id="L34">        this.size = 0;</span>
+<span class="fc" id="L35">    }</span>
+
+    // ===================================================================
+    // BLOCO A — Consultas de estado (size, isEmpty)
+    // Retornam informações sobre a lista sem percorrê-la. Como o contador
+    // 'size' é mantido atualizado a cada operação, ambas são O(1).
+    // ===================================================================
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int size() {
+<span class="fc" id="L48">        return size;</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isEmpty() {
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        return size == 0;</span>
+    }
+
+    // ===================================================================
+    // BLOCO B — Inserção no fim (add)
+    // Cria um nó e o anexa após o tail atual. Se a lista estava vazia, o
+    // novo nó passa a ser head e tail ao mesmo tempo. O(1) graças ao tail.
+    // ===================================================================
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void add(T element) {
+<span class="fc" id="L70">        Node&lt;T&gt; novo = new Node&lt;&gt;(element);</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">        if (head == null) {        // lista vazia: novo nó é head e tail</span>
+<span class="fc" id="L72">            head = novo;</span>
+<span class="fc" id="L73">            tail = novo;</span>
+        } else {                   // anexa após o tail atual
+<span class="fc" id="L75">            tail.setNext(novo);</span>
+<span class="fc" id="L76">            tail = novo;</span>
+        }
+<span class="fc" id="L78">        size++;</span>
+<span class="fc" id="L79">    }</span>
+
+    // ===================================================================
+    // BLOCO C — Inserção no início (addFirst)
+    // Espelho do add: o novo nó aponta para o antigo head e passa a ser o
+    // novo head. Se a lista estava vazia, também vira o tail. O(1).
+    // ===================================================================
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addFirst(T element) {
+<span class="fc" id="L92">        Node&lt;T&gt; novo = new Node&lt;&gt;(element);</span>
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">        if (head == null) {        // lista vazia: novo é head e tail</span>
+<span class="nc" id="L94">            head = novo;</span>
+<span class="nc" id="L95">            tail = novo;</span>
+        } else {                   // novo aponta para o antigo head
+<span class="fc" id="L97">            novo.setNext(head);</span>
+<span class="fc" id="L98">            head = novo;</span>
+        }
+<span class="fc" id="L100">        size++;</span>
+<span class="fc" id="L101">    }</span>
+
+    // ===================================================================
+    // BLOCO D — Inserção em posição (addAt)
+    // Valida o índice (retorna false se inválido, sem exceção). Reaproveita
+    // addFirst/add nos extremos; no caso geral, caminha até o nó anterior à
+    // posição e religa os ponteiros para encaixar o novo nó.
+    // ===================================================================
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean addAt(int index, T element) {
+<span class="fc bfc" id="L115" title="All 4 branches covered.">        if (index &lt; 0 || index &gt; size) {   // índice inválido: imune a exceção</span>
+<span class="fc" id="L116">            return false;</span>
+        }
+<span class="pc bpc" id="L118" title="1 of 2 branches missed.">        if (index == 0) {                  // início: reaproveita addFirst</span>
+<span class="nc" id="L119">            addFirst(element);</span>
+<span class="nc" id="L120">            return true;</span>
+        }
+<span class="pc bpc" id="L122" title="1 of 2 branches missed.">        if (index == size) {               // fim: reaproveita add</span>
+<span class="nc" id="L123">            add(element);</span>
+<span class="nc" id="L124">            return true;</span>
+        }
+        // caso geral: parar no nó ANTERIOR à posição de inserção
+<span class="fc" id="L127">        Node&lt;T&gt; anterior = head;</span>
+<span class="pc bpc" id="L128" title="1 of 2 branches missed.">        for (int i = 0; i &lt; index - 1; i++) {</span>
+<span class="nc" id="L129">            anterior = anterior.getNext();</span>
+        }
+<span class="fc" id="L131">        Node&lt;T&gt; novo = new Node&lt;&gt;(element);</span>
+<span class="fc" id="L132">        novo.setNext(anterior.getNext()); // novo aponta para quem estava em index</span>
+<span class="fc" id="L133">        anterior.setNext(novo);           // anterior passa a apontar para novo</span>
+<span class="fc" id="L134">        size++;</span>
+<span class="fc" id="L135">        return true;</span>
+    }
+
+    // ===================================================================
+    // BLOCO E — Consulta por índice (get)
+    // Caminha do head dando 'index' passos e retorna o dado. Índice válido
+    // vai de 0 a size-1; fora disso retorna null. Acesso é O(n).
+    // ===================================================================
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public T get(int index) {
+<span class="fc bfc" id="L149" title="All 4 branches covered.">        if (index &lt; 0 || index &gt;= size) {   // índice inválido: retorna sentinela</span>
+<span class="fc" id="L150">            return null;</span>
+        }
+<span class="fc" id="L152">        Node&lt;T&gt; atual = head;</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">        for (int i = 0; i &lt; index; i++) {   // caminha até a posição desejada</span>
+<span class="fc" id="L154">            atual = atual.getNext();</span>
+        }
+<span class="fc" id="L156">        return atual.getData();</span>
+    }
+
+    // ===================================================================
+    // BLOCO F — Busca por valor (contains)
+    // Percorre a lista comparando cada dado (via 'igual', seguro contra
+    // null). Retorna true assim que encontra, false se chegar ao fim.
+    // ===================================================================
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean contains(T element) {
+<span class="fc" id="L170">        Node&lt;T&gt; atual = head;</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">        while (atual != null) {</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">            if (igual(atual.getData(), element)) {</span>
+<span class="fc" id="L173">                return true;</span>
+            }
+<span class="fc" id="L175">            atual = atual.getNext();</span>
+        }
+<span class="fc" id="L177">        return false;</span>
+    }
+
+    // ===================================================================
+    // BLOCO G — Remoção por valor (remove)
+    // Trata a remoção do primeiro nó como caso especial. No caso geral usa
+    // dois ponteiros (anterior/atual) para 'pular' o nó alvo. Mantém tail e
+    // size coerentes. Retorna false se o elemento não existir.
+    // ===================================================================
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean remove(T element) {
+<span class="pc bpc" id="L192" title="1 of 2 branches missed.">        if (head == null) {                 // lista vazia: nada a remover</span>
+<span class="nc" id="L193">            return false;</span>
+        }
+<span class="fc bfc" id="L195" title="All 2 branches covered.">        if (igual(head.getData(), element)) {   // remoção do primeiro</span>
+<span class="fc" id="L196">            head = head.getNext();</span>
+<span class="pc bpc" id="L197" title="1 of 2 branches missed.">            if (head == null) {             // a lista ficou vazia</span>
+<span class="nc" id="L198">                tail = null;</span>
+            }
+<span class="fc" id="L200">            size--;</span>
+<span class="fc" id="L201">            return true;</span>
+        }
+        // procura mantendo referência ao nó anterior
+<span class="fc" id="L204">        Node&lt;T&gt; anterior = head;</span>
+<span class="fc" id="L205">        Node&lt;T&gt; atual = head.getNext();</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">        while (atual != null) {</span>
+<span class="fc bfc" id="L207" title="All 2 branches covered.">            if (igual(atual.getData(), element)) {</span>
+<span class="fc" id="L208">                anterior.setNext(atual.getNext());  // &quot;pula&quot; o nó removido</span>
+<span class="pc bpc" id="L209" title="1 of 2 branches missed.">                if (atual == tail) {        // removeu o último: atualiza tail</span>
+<span class="fc" id="L210">                    tail = anterior;</span>
+                }
+<span class="fc" id="L212">                size--;</span>
+<span class="fc" id="L213">                return true;</span>
+            }
+<span class="fc" id="L215">            anterior = atual;</span>
+<span class="fc" id="L216">            atual = atual.getNext();</span>
+        }
+<span class="fc" id="L218">        return false;                       // não encontrado</span>
+    }
+
+    // ===================================================================
+    // BLOCO H — Remoção por índice (removeAt)
+    // Mesma lógica do remove, mas localizando por posição e devolvendo o
+    // dado removido (retorno T). Índice inválido retorna null.
+    // ===================================================================
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public T removeAt(int index) {
+<span class="fc bfc" id="L232" title="All 4 branches covered.">        if (index &lt; 0 || index &gt;= size) {   // índice inválido: sentinela</span>
+<span class="fc" id="L233">            return null;</span>
+        }
+<span class="fc bfc" id="L235" title="All 2 branches covered.">        if (index == 0) {                   // remoção do primeiro</span>
+<span class="fc" id="L236">            Node&lt;T&gt; removido = head;</span>
+<span class="fc" id="L237">            head = head.getNext();</span>
+<span class="fc bfc" id="L238" title="All 2 branches covered.">            if (head == null) {</span>
+<span class="fc" id="L239">                tail = null;</span>
+            }
+<span class="fc" id="L241">            size--;</span>
+<span class="fc" id="L242">            return removido.getData();</span>
+        }
+        // caminha até o nó anterior ao alvo
+<span class="fc" id="L245">        Node&lt;T&gt; anterior = head;</span>
+<span class="pc bpc" id="L246" title="1 of 2 branches missed.">        for (int i = 0; i &lt; index - 1; i++) {</span>
+<span class="nc" id="L247">            anterior = anterior.getNext();</span>
+        }
+<span class="fc" id="L249">        Node&lt;T&gt; removido = anterior.getNext();</span>
+<span class="fc" id="L250">        anterior.setNext(removido.getNext());   // desliga o alvo</span>
+<span class="pc bpc" id="L251" title="1 of 2 branches missed.">        if (removido == tail) {             // removeu o último</span>
+<span class="nc" id="L252">            tail = anterior;</span>
+        }
+<span class="fc" id="L254">        size--;</span>
+<span class="fc" id="L255">        return removido.getData();</span>
+    }
+
+    // ===================================================================
+    // BLOCO I — Auxiliar de comparação (igual)
+    // Compara dois elementos por conteúdo (equals), tratando null com
+    // segurança para nunca lançar NullPointerException. Uso interno.
+    // ===================================================================
+
+    /**
+     * Compara dois elementos de forma segura contra {@code null}.
+     * Usa {@code equals} para comparar conteúdo, não identidade de referência.
+     *
+     * @param a primeiro elemento (pode ser {@code null}).
+     * @param b segundo elemento (pode ser {@code null}).
+     * @return {@code true} se ambos forem {@code null} ou se forem iguais
+     *         segundo {@code equals}.
+     */
+    private boolean igual(T a, T b) {
+<span class="fc bfc" id="L274" title="All 2 branches covered.">        if (a == null) {</span>
+<span class="pc bpc" id="L275" title="1 of 2 branches missed.">            return b == null;</span>
+        }
+<span class="fc" id="L277">        return a.equals(b);</span>
+    }
+
+    // Próximos blocos: addSorted, reverse, concatenate e clear.
+
+    // ===================================================================
+    // BLOCO J — Inserção ordenada (addSorted)
+    // Pré-condição: a lista já está ordenada segundo o comparador. Percorre
+    // até achar a posição correta e insere ali, preservando a ordem. Trata
+    // inserção no início e no fim como casos naturais do percurso.
+    // ===================================================================
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addSorted(T element, Comparator&lt;T&gt; comparator) {
+<span class="fc" id="L294">        Node&lt;T&gt; novo = new Node&lt;&gt;(element);</span>
+        // Caso 1: lista vazia ou elemento &lt;= head -&gt; insere no início
+<span class="fc bfc" id="L296" title="All 4 branches covered.">        if (head == null || comparator.compare(element, head.getData()) &lt;= 0) {</span>
+<span class="fc" id="L297">            novo.setNext(head);</span>
+<span class="fc" id="L298">            head = novo;</span>
+<span class="fc bfc" id="L299" title="All 2 branches covered.">            if (tail == null) {        // lista estava vazia</span>
+<span class="fc" id="L300">                tail = novo;</span>
+            }
+<span class="fc" id="L302">            size++;</span>
+<span class="fc" id="L303">            return;</span>
+        }
+        // Caso 2: percorre até achar o nó cujo próximo é maior que o elemento
+<span class="fc" id="L306">        Node&lt;T&gt; atual = head;</span>
+<span class="pc bpc" id="L307" title="1 of 2 branches missed.">        while (atual.getNext() != null</span>
+<span class="fc bfc" id="L308" title="All 2 branches covered.">                &amp;&amp; comparator.compare(atual.getNext().getData(), element) &lt; 0) {</span>
+<span class="fc" id="L309">            atual = atual.getNext();</span>
+        }
+<span class="fc" id="L311">        novo.setNext(atual.getNext()); // encaixa entre 'atual' e o seguinte</span>
+<span class="fc" id="L312">        atual.setNext(novo);</span>
+<span class="pc bpc" id="L313" title="1 of 2 branches missed.">        if (novo.getNext() == null) {  // inseriu no fim: atualiza tail</span>
+<span class="nc" id="L314">            tail = novo;</span>
+        }
+<span class="fc" id="L316">        size++;</span>
+<span class="fc" id="L317">    }</span>
+    // ===================================================================
+    // BLOCO K — Inversão in-place (reverse)
+    // Inverte o sentido dos ponteiros 'next' sem alocar nova estrutura.
+    // Usa três ponteiros (anterior, atual, proximo) e ao final troca os
+    // papéis de head e tail.
+    // ===================================================================
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void reverse() {
+<span class="fc" id="L330">        Node&lt;T&gt; anterior = null;</span>
+<span class="fc" id="L331">        Node&lt;T&gt; atual = head;</span>
+<span class="fc" id="L332">        tail = head;                   // o antigo primeiro será o novo último</span>
+<span class="fc bfc" id="L333" title="All 2 branches covered.">        while (atual != null) {</span>
+<span class="fc" id="L334">            Node&lt;T&gt; proximo = atual.getNext(); // guarda o próximo antes de mexer</span>
+<span class="fc" id="L335">            atual.setNext(anterior);   // inverte o ponteiro deste nó</span>
+<span class="fc" id="L336">            anterior = atual;          // avança 'anterior'</span>
+<span class="fc" id="L337">            atual = proximo;           // avança 'atual'</span>
+<span class="fc" id="L338">        }</span>
+<span class="fc" id="L339">        head = anterior;               // 'anterior' parou no antigo último nó</span>
+<span class="fc" id="L340">    }</span>
+    // ===================================================================
+    // BLOCO L — Concatenação (concatenate)
+    // Acrescenta ao fim desta lista uma CÓPIA dos elementos de 'other'.
+    // A lista 'other' não é modificada (copiamos os dados, não os nós).
+    // ===================================================================
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void concatenate(ListADT&lt;T&gt; other) {
+<span class="fc bfc" id="L352" title="All 2 branches covered.">        if (other == null) {           // nada a concatenar</span>
+<span class="fc" id="L353">            return;</span>
+        }
+<span class="fc bfc" id="L355" title="All 2 branches covered.">        for (int i = 0; i &lt; other.size(); i++) {</span>
+<span class="fc" id="L356">            add(other.get(i));         // copia cada elemento ao fim desta lista</span>
+        }
+<span class="fc" id="L358">    }</span>
+    // ===================================================================
+    // BLOCO M — Limpeza (clear)
+    // Desreferencia head e tail e zera o size. Os nós ficam sem referências
+    // e são recolhidos pelo coletor de lixo (garbage collector) do Java.
+    // ===================================================================
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void clear() {
+<span class="fc" id="L370">        head = null;</span>
+<span class="fc" id="L371">        tail = null;</span>
+<span class="fc" id="L372">        size = 0;</span>
+<span class="fc" id="L373">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

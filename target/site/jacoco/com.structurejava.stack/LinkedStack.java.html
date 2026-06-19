@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LinkedStack.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">StructureJava</a> &gt; <a href="index.source.html" class="el_package">com.structurejava.stack</a> &gt; <span class="el_source">LinkedStack.java</span></div><h1>LinkedStack.java</h1><pre class="source lang-java linenums">package com.structurejava.stack;
+
+import com.structurejava.api.StackADT;
+import com.structurejava.node.Node;
+
+/**
+ * Implementação de pilha (LIFO) baseada em nós encadeados.
+ * O topo da pilha corresponde ao primeiro nó ({@code head}), de modo que
+ * inserção e remoção ocorrem sempre em O(1). Imune a exceções: operações
+ * sobre pilha vazia retornam {@code null}.
+ *
+ * @param &lt;T&gt; o tipo dos elementos armazenados na pilha.
+ */
+public class LinkedStack&lt;T&gt; implements StackADT&lt;T&gt; {
+
+    /** Nó do topo da pilha; {@code null} se vazia. */
+    private Node&lt;T&gt; top;
+
+    /** Quantidade de elementos na pilha. */
+    private int size;
+
+    /**
+     * Cria uma pilha vazia.
+     */
+<span class="fc" id="L25">    public LinkedStack() {</span>
+<span class="fc" id="L26">        this.top = null;</span>
+<span class="fc" id="L27">        this.size = 0;</span>
+<span class="fc" id="L28">    }</span>
+
+    // ===================================================================
+    // BLOCO A — push: empilha no topo (insere antes do nó de topo atual)
+    // ===================================================================
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void push(T element) {
+<span class="fc" id="L39">        Node&lt;T&gt; novo = new Node&lt;&gt;(element);</span>
+<span class="fc" id="L40">        novo.setNext(top);   // novo aponta para o antigo topo</span>
+<span class="fc" id="L41">        top = novo;          // novo passa a ser o topo</span>
+<span class="fc" id="L42">        size++;</span>
+<span class="fc" id="L43">    }</span>
+
+    // ===================================================================
+    // BLOCO B — pop: desempilha o topo e o retorna (null se vazia)
+    // ===================================================================
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public T pop() {
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        if (top == null) {   // pilha vazia: sentinela</span>
+<span class="fc" id="L55">            return null;</span>
+        }
+<span class="fc" id="L57">        Node&lt;T&gt; removido = top;</span>
+<span class="fc" id="L58">        top = top.getNext(); // o topo passa a ser o nó de baixo</span>
+<span class="fc" id="L59">        size--;</span>
+<span class="fc" id="L60">        return removido.getData();</span>
+    }
+
+    // ===================================================================
+    // BLOCO C — peek: retorna o topo sem remover (null se vazia)
+    // ===================================================================
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public T peek() {
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        if (top == null) {</span>
+<span class="fc" id="L73">            return null;</span>
+        }
+<span class="fc" id="L75">        return top.getData();</span>
+    }
+
+    // ===================================================================
+    // BLOCO D — consultas e limpeza (size, isEmpty, clear)
+    // ===================================================================
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int size() {
+<span class="fc" id="L87">        return size;</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isEmpty() {
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">        return size == 0;</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void clear() {
+<span class="fc" id="L103">        top = null;</span>
+<span class="fc" id="L104">        size = 0;</span>
+<span class="fc" id="L105">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

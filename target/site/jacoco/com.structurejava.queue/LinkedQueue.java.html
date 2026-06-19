@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LinkedQueue.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">StructureJava</a> &gt; <a href="index.source.html" class="el_package">com.structurejava.queue</a> &gt; <span class="el_source">LinkedQueue.java</span></div><h1>LinkedQueue.java</h1><pre class="source lang-java linenums">package com.structurejava.queue;
+
+import com.structurejava.api.QueueADT;
+import com.structurejava.node.Node;
+
+/**
+ * Implementação de fila (FIFO) baseada em nós encadeados.
+ * A inserção ({@code enqueue}) ocorre no fim ({@code tail}) e a remoção
+ * ({@code dequeue}) no início ({@code head}), ambas em O(1) graças à
+ * manutenção do ponteiro de cauda. Imune a exceções: operações sobre fila
+ * vazia retornam {@code null}.
+ *
+ * @param &lt;T&gt; o tipo dos elementos armazenados na fila.
+ */
+public class LinkedQueue&lt;T&gt; implements QueueADT&lt;T&gt; {
+
+    /** Nó do início da fila (próximo a sair); {@code null} se vazia. */
+    private Node&lt;T&gt; head;
+
+    /** Nó do fim da fila (último a entrar); {@code null} se vazia. */
+    private Node&lt;T&gt; tail;
+
+    /** Quantidade de elementos na fila. */
+    private int size;
+
+    /**
+     * Cria uma fila vazia.
+     */
+<span class="fc" id="L29">    public LinkedQueue() {</span>
+<span class="fc" id="L30">        this.head = null;</span>
+<span class="fc" id="L31">        this.tail = null;</span>
+<span class="fc" id="L32">        this.size = 0;</span>
+<span class="fc" id="L33">    }</span>
+
+    // ===================================================================
+    // BLOCO A — enqueue: insere no fim da fila (após o tail)
+    // ===================================================================
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void enqueue(T element) {
+<span class="fc" id="L44">        Node&lt;T&gt; novo = new Node&lt;&gt;(element);</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        if (head == null) {        // fila vazia: novo é head e tail</span>
+<span class="fc" id="L46">            head = novo;</span>
+<span class="fc" id="L47">            tail = novo;</span>
+        } else {                   // anexa após o tail
+<span class="fc" id="L49">            tail.setNext(novo);</span>
+<span class="fc" id="L50">            tail = novo;</span>
+        }
+<span class="fc" id="L52">        size++;</span>
+<span class="fc" id="L53">    }</span>
+
+    // ===================================================================
+    // BLOCO B — dequeue: remove do início e retorna (null se vazia)
+    // ===================================================================
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public T dequeue() {
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        if (head == null) {        // fila vazia: sentinela</span>
+<span class="fc" id="L65">            return null;</span>
+        }
+<span class="fc" id="L67">        Node&lt;T&gt; removido = head;</span>
+<span class="fc" id="L68">        head = head.getNext();     // o início passa a ser o próximo</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">        if (head == null) {        // a fila ficou vazia: zera o tail também</span>
+<span class="fc" id="L70">            tail = null;</span>
+        }
+<span class="fc" id="L72">        size--;</span>
+<span class="fc" id="L73">        return removido.getData();</span>
+    }
+
+    // ===================================================================
+    // BLOCO C — peek: retorna o início sem remover (null se vazia)
+    // ===================================================================
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public T peek() {
+<span class="fc bfc" id="L85" title="All 2 branches covered.">        if (head == null) {</span>
+<span class="fc" id="L86">            return null;</span>
+        }
+<span class="fc" id="L88">        return head.getData();</span>
+    }
+
+    // ===================================================================
+    // BLOCO D — consultas e limpeza (size, isEmpty, clear)
+    // ===================================================================
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int size() {
+<span class="fc" id="L100">        return size;</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isEmpty() {
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">        return size == 0;</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void clear() {
+<span class="fc" id="L116">        head = null;</span>
+<span class="fc" id="L117">        tail = null;</span>
+<span class="fc" id="L118">        size = 0;</span>
+<span class="fc" id="L119">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,12 @@
+com\structurejava\api\LinearStructure.class
+com\structurejava\api\DequeADT.class
+com\structurejava\api\QueueADT.class
+com\structurejava\api\StackADT.class
+com\structurejava\node\DoubleNode.class
+com\structurejava\deque\LinkedDeque.class
+com\structurejava\api\ListADT.class
+com\structurejava\list\SinglyLinkedList.class
+com\structurejava\list\DoublyLinkedList.class
+com\structurejava\stack\LinkedStack.class
+com\structurejava\node\Node.class
+com\structurejava\queue\LinkedQueue.class

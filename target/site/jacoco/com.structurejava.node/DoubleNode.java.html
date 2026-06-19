@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DoubleNode.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">StructureJava</a> &gt; <a href="index.source.html" class="el_package">com.structurejava.node</a> &gt; <span class="el_source">DoubleNode.java</span></div><h1>DoubleNode.java</h1><pre class="source lang-java linenums">package com.structurejava.node;
+
+/**
+ * Nó de uma estrutura duplamente encadeada.
+ * Armazena um dado e referências para o nó anterior e o próximo,
+ * permitindo navegação bidirecional.
+ *
+ * @param &lt;T&gt; o tipo do elemento armazenado no nó.
+ */
+public class DoubleNode&lt;T&gt; {
+
+    /** O dado (valor) armazenado neste nó. */
+    private T data;
+
+    /** Referência para o nó anterior. {@code null} indica início. */
+    private DoubleNode&lt;T&gt; prev;
+
+    /** Referência para o próximo nó. {@code null} indica fim. */
+    private DoubleNode&lt;T&gt; next;
+
+    /**
+     * Cria um nó contendo o dado informado, sem anterior nem sucessor.
+     *
+     * @param data o elemento a ser armazenado.
+     */
+<span class="fc" id="L26">    public DoubleNode(T data) {</span>
+<span class="fc" id="L27">        this.data = data;</span>
+<span class="fc" id="L28">        this.prev = null;</span>
+<span class="fc" id="L29">        this.next = null;</span>
+<span class="fc" id="L30">    }</span>
+
+    /**
+     * Retorna o dado armazenado neste nó.
+     *
+     * @return o elemento armazenado.
+     */
+    public T getData() {
+<span class="fc" id="L38">        return data;</span>
+    }
+
+    /**
+     * Define o dado armazenado neste nó.
+     *
+     * @param data o novo elemento a ser armazenado.
+     */
+    public void setData(T data) {
+<span class="nc" id="L47">        this.data = data;</span>
+<span class="nc" id="L48">    }</span>
+
+    /**
+     * Retorna a referência para o nó anterior.
+     *
+     * @return o nó anterior, ou {@code null} se este for o primeiro.
+     */
+    public DoubleNode&lt;T&gt; getPrev() {
+<span class="fc" id="L56">        return prev;</span>
+    }
+
+    /**
+     * Define a referência para o nó anterior.
+     *
+     * @param prev o nó que passará a ser o antecessor.
+     */
+    public void setPrev(DoubleNode&lt;T&gt; prev) {
+<span class="fc" id="L65">        this.prev = prev;</span>
+<span class="fc" id="L66">    }</span>
+
+    /**
+     * Retorna a referência para o próximo nó.
+     *
+     * @return o próximo nó, ou {@code null} se este for o último.
+     */
+    public DoubleNode&lt;T&gt; getNext() {
+<span class="fc" id="L74">        return next;</span>
+    }
+
+    /**
+     * Define a referência para o próximo nó.
+     *
+     * @param next o nó que passará a ser o sucessor.
+     */
+    public void setNext(DoubleNode&lt;T&gt; next) {
+<span class="fc" id="L83">        this.next = next;</span>
+<span class="fc" id="L84">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
